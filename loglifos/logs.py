@@ -7,19 +7,28 @@ import traceback
 
 
 # Set always the root level to ERROR on init
-root_logger = logging.getLogger("root")
-root_logger.setLevel(logging.ERROR)
+_root_logger = logging.getLogger("root")
+_root_logger.setLevel(logging.ERROR)
 
 # Initialize loglifos with default values StreamHandler with JSON formatter and ERROR log level.
-loglifos = logging.getLogger("loglifos")
-loglifos.setLevel(logging.ERROR)
+_loglifos = logging.getLogger("loglifos")
+_loglifos.setLevel(logging.ERROR)
 
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter("%(message)s")
 ch.setFormatter(formatter)
-loglifos.addHandler(ch)
+_loglifos.addHandler(ch)
+
+CRITICAL = 50
+FATAL = CRITICAL
+ERROR = 40
+WARNING = 30
+WARN = WARNING
+INFO = 20
+DEBUG = 10
+NOTSET = 0
 
 
 class SingleExecutor:
@@ -55,32 +64,32 @@ def __to_json(msg, level: str, *args, exception: Exception = None, **kwargs) -> 
 def debug(msg, *args, **kwargs):
     json_repr = __to_json(msg, "DEBUG", *args, **kwargs)
     executor = SingleExecutor.get_executor()
-    return executor.submit(loglifos.debug, json_repr)
+    return executor.submit(_loglifos.debug, json_repr)
 
 
 def info(msg, *args, **kwargs):
     json_repr = __to_json(msg, "INFO", *args, **kwargs)
     executor = SingleExecutor.get_executor()
-    return executor.submit(loglifos.info, json_repr)
+    return executor.submit(_loglifos.info, json_repr)
 
 
 def warning(msg, *args, **kwargs):
     json_repr = __to_json(msg, "WARNING", *args, **kwargs)
     executor = SingleExecutor.get_executor()
-    return executor.submit(loglifos.warning, json_repr)
+    return executor.submit(_loglifos.warning, json_repr)
 
 
 def error(msg, *args, exception: Exception = None, **kwargs):
     json_repr = __to_json(msg, "ERROR", exception=exception, *args, **kwargs)
     executor = SingleExecutor.get_executor()
-    return executor.submit(loglifos.error, json_repr)
+    return executor.submit(_loglifos.error, json_repr)
 
 
 def critical(msg, *args, **kwargs):
     json_repr = __to_json(msg, "CRITICAL", *args, **kwargs)
     executor = SingleExecutor.get_executor()
-    return executor.submit(loglifos.critical, json_repr)
+    return executor.submit(_loglifos.critical, json_repr)
 
 
-def set_config(log_level: int = logging.ERROR):
-    loglifos.setLevel(log_level)
+def set_config(log_level: int = ERROR):
+    _loglifos.setLevel(log_level)
