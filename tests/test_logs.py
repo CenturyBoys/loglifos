@@ -8,7 +8,7 @@ import loglifos
 
 
 def test_set_config():
-    loglifos.set_config()
+    loglifos.set_config(loglifos.ERROR)
 
 
 @freeze_time("2023-01-01T10:10:10.000000")
