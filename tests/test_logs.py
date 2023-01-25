@@ -1,4 +1,3 @@
-import logging
 import unittest.mock
 from logging import Logger
 
@@ -71,6 +70,6 @@ def test_error():
         '{"time": "2023-01-01 10:10:10", "level": "ERROR", "file": "/home/marco/projects/loglifos/tests/t'
         'est_logs.py", "function": "test_error", "msg": "message", "meu_loro": "\'debug\'", "args": "(123'
         ',)", "error": "Traceback (most recent call last):\\n  File \\"/home/marco/projects/loglifos/test'
-        's/test_logs.py\\", line 66, in test_error\\n    raise Exception(\\"meu lorito\\")\\nException: m'
+        's/test_logs.py\\", line 65, in test_error\\n    raise Exception(\\"meu lorito\\")\\nException: m'
         'eu lorito\\n"}',
     )
