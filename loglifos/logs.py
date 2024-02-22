@@ -4,7 +4,7 @@ import inspect
 import json
 import logging
 import traceback
-
+from enum import IntEnum
 
 # Set always the root level to ERROR on init
 _root_logger = logging.getLogger("root")
@@ -31,6 +31,14 @@ DEBUG = 10
 NOTSET = 0
 
 
+class LogType(IntEnum):
+    JSON = 0
+    TEXT = 1
+
+
+log_type = LogType.JSON
+
+
 class SingleExecutor:
     __executor = None
 
@@ -41,7 +49,9 @@ class SingleExecutor:
         return cls.__executor
 
 
-def __to_json(msg, level: str, *args, exception: Exception = None, **kwargs) -> str:
+def __format_message(
+    msg, level: str, *args, exception: Exception = None, **kwargs
+) -> str:
     stack = inspect.stack()[2]
     _dict = {
         "time": str(datetime.datetime.utcnow()),
@@ -58,38 +68,49 @@ def __to_json(msg, level: str, *args, exception: Exception = None, **kwargs) -> 
         _dict.update({"args": repr(args)})
     if exception:
         _dict.update({"error": "".join(traceback.format_exception(exception))})
-    return json.dumps(_dict)
+    if log_type == LogType.JSON:
+        message = json.dumps(_dict)
+    else:
+        list_message = [f"{key.title()}: {value}" for key, value in _dict.items()]
+        list_message.insert(0, "#" * 50)
+        message = "\n".join(list_message)
+    return message
 
 
 def debug(msg, *args, **kwargs):
-    json_repr = __to_json(msg, "DEBUG", *args, **kwargs)
+    json_repr = __format_message(msg, "DEBUG", *args, **kwargs)
     executor = SingleExecutor.get_executor()
     return executor.submit(_loglifos.debug, json_repr)
 
 
 def info(msg, *args, **kwargs):
-    json_repr = __to_json(msg, "INFO", *args, **kwargs)
+    json_repr = __format_message(msg, "INFO", *args, **kwargs)
     executor = SingleExecutor.get_executor()
     return executor.submit(_loglifos.info, json_repr)
 
 
 def warning(msg, *args, **kwargs):
-    json_repr = __to_json(msg, "WARNING", *args, **kwargs)
+    json_repr = __format_message(msg, "WARNING", *args, **kwargs)
     executor = SingleExecutor.get_executor()
     return executor.submit(_loglifos.warning, json_repr)
 
 
 def error(msg, *args, exception: Exception = None, **kwargs):
-    json_repr = __to_json(msg, "ERROR", exception=exception, *args, **kwargs)
+    json_repr = __format_message(msg, "ERROR", exception=exception, *args, **kwargs)
     executor = SingleExecutor.get_executor()
     return executor.submit(_loglifos.error, json_repr)
 
 
 def critical(msg, *args, **kwargs):
-    json_repr = __to_json(msg, "CRITICAL", *args, **kwargs)
+    json_repr = __format_message(msg, "CRITICAL", *args, **kwargs)
     executor = SingleExecutor.get_executor()
     return executor.submit(_loglifos.critical, json_repr)
 
 
 def set_config(log_level: int = ERROR):
     _loglifos.setLevel(log_level)
+
+
+def set_log_type(new_type: LogType = LogType.JSON):
+    global log_type  # pylint: disable=W0603
+    log_type = new_type

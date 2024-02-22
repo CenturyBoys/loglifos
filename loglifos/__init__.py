@@ -13,4 +13,6 @@ from .logs import (
     INFO,
     DEBUG,
     NOTSET,
+    LogType,
+    set_log_type,
 )
