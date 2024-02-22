@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "loglifos"
-version = "0.1.0"
+version = "0.2.0"
 description = "A log helper"
 authors = ["Marco Sievers de Almeida Ximit Gaia <im.ximit@gmail.com>"]
 license = "Apache License 2.0"
