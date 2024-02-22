@@ -8,7 +8,7 @@ repos:
       types: [ python ]
     - id: pylint
       name: pylint
-      entry: pylint kobject
+      entry: pylint loglifos
       language: system
       types: [python]
       args:
